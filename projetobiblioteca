@@ -1,0 +1,121 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+// Classe Livro
+class Livro {
+    public string Titulo { get; set; }
+    public string Autor { get; set; }
+    public string Codigo { get; set; }
+    public bool Disponivel { get; set; }
+
+    public Livro(string titulo, string autor, string codigo) {
+        Titulo = titulo;
+        Autor = autor;
+        Codigo = codigo;
+        Disponivel = true;
+    }
+}
+
+// Classe Biblioteca
+class Biblioteca {
+    private List<Livro> livros = new List<Livro>();
+
+    public void CadastrarLivro(string titulo, string autor, string codigo) {
+        if (livros.Any(l => l.Codigo == codigo)) {
+            Console.WriteLine("Já existe um livro com esse código.");
+            return;
+        }
+
+        livros.Add(new Livro(titulo, autor, codigo));
+        Console.WriteLine("Livro cadastrado com sucesso!");
+    }
+
+    public void ListarLivros() {
+        if (livros.Count == 0) {
+            Console.WriteLine("Nenhum livro cadastrado.");
+            return;
+        }
+
+        Console.WriteLine("\nLista de livros:");
+        foreach (var livro in livros) {
+            string status = livro.Disponivel ? "Disponível" : "Emprestado";
+            Console.WriteLine($"Código: {livro.Codigo} | Título: {livro.Titulo} | Autor: {livro.Autor} | Status: {status}");
+            Console.WriteLine("---------------------");
+        }
+    }
+
+    public void EmprestarLivro(string codigo) {
+        var livro = livros.FirstOrDefault(l => l.Codigo == codigo);
+        if (livro != null) {
+            if (livro.Disponivel) {
+                livro.Disponivel = false;
+                Console.WriteLine("Livro emprestado com sucesso.");
+            } else {
+                Console.WriteLine("Esse livro já está emprestado.");
+            }
+            return;
+        }
+        Console.WriteLine("Livro não encontrado.");
+    }
+
+    public void DevolverLivro(string codigo) {
+        var livro = livros.FirstOrDefault(l => l.Codigo == codigo);
+        if (livro != null) {
+            if (!livro.Disponivel) {
+                livro.Disponivel = true;
+                Console.WriteLine("Livro devolvido com sucesso.");
+            } else {
+                Console.WriteLine("Esse livro já está disponível.");
+            }
+            return;
+        }
+        Console.WriteLine("Livro não encontrado.");
+    }
+}
+
+// Programa principal
+class Program {
+    static void Main() {
+        Biblioteca biblioteca = new Biblioteca();
+        string opcao = "";
+
+        while (opcao != "5") {
+            Console.WriteLine("\n===== BIBLIOTECA =====");
+            Console.WriteLine("1 - Cadastrar livro");
+            Console.WriteLine("2 - Listar livros");
+            Console.WriteLine("3 - Emprestar livro");
+            Console.WriteLine("4 - Devolver livro");
+            Console.WriteLine("5 - Sair");
+            Console.Write("Escolha uma opção: ");
+            
+            opcao = Console.ReadLine();
+
+            switch (opcao) {
+                case "1":
+                    Console.Write("Título: "); string t = Console.ReadLine();
+                    Console.Write("Autor: "); string a = Console.ReadLine();
+                    Console.Write("Código: "); string c = Console.ReadLine();
+                    biblioteca.CadastrarLivro(t, a, c);
+                    break;
+                case "2":
+                    biblioteca.ListarLivros();
+                    break;
+                case "3":
+                    Console.Write("Código do livro: ");
+                    biblioteca.EmprestarLivro(Console.ReadLine());
+                    break;
+                case "4":
+                    Console.Write("Código do livro: ");
+                    biblioteca.DevolverLivro(Console.ReadLine());
+                    break;
+                case "5":
+                    Console.WriteLine("Saindo...");
+                    break;
+                default:
+                    Console.WriteLine("Opção inválida.");
+                    break;
+            }
+        }
+    }
+}
